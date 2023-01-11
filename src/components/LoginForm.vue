@@ -6,50 +6,69 @@
 
     <div class="relative h-full w-full">
       <form @submit="createAccount">
-        <label for="chk" aria-hidden="true">Sign up</label>
-        <input
-          type="text"
-          name="txt"
-          placeholder="Login"
-          v-model="signUpUsername"
-          :required="true"
-        />
-        <input
-          v-model="signUpEmail"
-          type="email"
-          name="email"
-          placeholder="Email"
-          :required="true"
-        />
-        <input
-          v-model="signUpPassword"
-          type="password"
-          name="password"
-          placeholder="Password"
-          :required="true"
-        />
-        <button type="submit">Sign up</button>
+        <label
+          class="text-white text-[2.3em] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
+          for="chk"
+          aria-hidden="true"
+          >Zarejestruj</label
+        >
+        <div class="grid grid-rows-3 grid-cols-1 gap-5">
+          <TheInput
+            class="col-span-1 w-[60%]"
+            type="text"
+            name="txt"
+            placeholder="Login"
+            :value="signUpUsername"
+            :required="true"
+          />
+          <TheInput
+            class="col-span-1 w-[60%]"
+            :value="signUpEmail"
+            type="email"
+            name="email"
+            placeholder="Email"
+            :required="true"
+          />
+          <TheInput
+            class="col-span-1 w-[60%]"
+            :value="signUpPassword"
+            type="password"
+            name="password"
+            placeholder="Hasło"
+            :required="true"
+          />
+        </div>
+        <TheButton button-type="submit" button-text="Zarejestruj się" />
       </form>
     </div>
 
     <div class="login">
       <form @submit="login">
-        <label for="chk" aria-hidden="true">Login</label>
-        <input
-          v-model="signInEmail"
-          type="email"
-          name="email"
-          placeholder="Email"
-          :required="true"
-        />
-        <input
-          v-model="signInPassword"
-          type="password"
-          name="password"
-          placeholder="Password"
-          :required="true"
-        />
-        <button type="submit">Login</button>
+        <label
+          class="text-black text-[2.3em] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
+          for="chk"
+          aria-hidden="true"
+          >Logowanie</label
+        >
+        <div class="grid grid-rows-2 grid-cols-1 gap-5">
+          <TheInput
+            class="col-span-1 w-[60%]"
+            :value="signInEmail"
+            type="email"
+            name="email"
+            placeholder="Email"
+            :required="true"
+          />
+          <TheInput
+            class="col-span-1 w-[60%]"
+            :value="signInPassword"
+            type="password"
+            name="password"
+            placeholder="Hasło"
+            :required="true"
+          />
+        </div>
+        <button type="submit">Zaloguj</button>
       </form>
     </div>
   </div>
@@ -59,6 +78,8 @@
 import { ref } from "vue";
 import { POSITION, useToast } from "vue-toastification";
 import router from "@/router";
+import TheInput from "./TheInput.vue";
+import TheButton from "./TheButton.vue";
 
 const toast = useToast();
 const signUpUsername = ref("");
@@ -96,49 +117,6 @@ const login = () => {
 }
 #chk {
   display: none;
-}
-
-label {
-  color: #fff;
-  font-size: 2.3em;
-  justify-content: center;
-  display: flex;
-  margin: 60px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.5s ease-in-out;
-}
-input {
-  width: 60%;
-  height: 40px;
-  background: #e0dede;
-  justify-content: center;
-  display: flex;
-  margin: 20px auto;
-  padding: 10px;
-  border: none;
-  outline: none;
-  border-radius: 5px;
-}
-button {
-  width: 60%;
-  height: 40px;
-  margin: 10px auto;
-  justify-content: center;
-  display: block;
-  color: #fff;
-  background: #573b8a;
-  font-size: 1em;
-  font-weight: bold;
-  margin-top: 20px;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  transition: 0.2s ease-in;
-  cursor: pointer;
-}
-button:hover {
-  background: #6d44b8;
 }
 .login {
   height: 460px;
