@@ -7,14 +7,14 @@
     <div class="relative h-full w-full">
       <form @submit="createAccount">
         <label
-          class="text-white text-[2.3em] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
+          class="text-white text-[2.3em] m-[60px] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
           for="chk"
           aria-hidden="true"
           >Zarejestruj</label
         >
-        <div class="grid grid-rows-3 grid-cols-1 gap-5">
+        <div class="mt-[-30px] grid grid-rows-4 grid-cols-8">
           <TheInput
-            class="col-span-1 w-[60%]"
+            class="col-start-3 col-span-4"
             type="text"
             name="txt"
             placeholder="Login"
@@ -22,7 +22,7 @@
             :required="true"
           />
           <TheInput
-            class="col-span-1 w-[60%]"
+            class="col-start-3 col-span-4"
             :value="signUpEmail"
             type="email"
             name="email"
@@ -30,45 +30,55 @@
             :required="true"
           />
           <TheInput
-            class="col-span-1 w-[60%]"
+            class="col-start-3 col-span-4"
             :value="signUpPassword"
             type="password"
             name="password"
             placeholder="Hasło"
             :required="true"
           />
+          <TheButton
+            class="col-start-3 col-span-4"
+            button-type="submit"
+            button-text="Zaloguj"
+          />
         </div>
-        <TheButton button-type="submit" button-text="Zarejestruj się" />
       </form>
     </div>
 
     <div class="login">
-      <form @submit="login">
+      <form @submit.prevent="login">
         <label
-          class="text-black text-[2.3em] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
+          class="text-[2.3em] m-[60px] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
           for="chk"
           aria-hidden="true"
           >Logowanie</label
         >
-        <div class="grid grid-rows-2 grid-cols-1 gap-5">
+        <div class="grid grid-rows-4 grid-cols-8">
           <TheInput
-            class="col-span-1 w-[60%]"
-            :value="signInEmail"
-            type="email"
-            name="email"
-            placeholder="Email"
+            class="col-start-3 col-span-4"
+            :value="signInLogin"
+            type="text"
+            name="login"
+            placeholder="Login"
             :required="true"
+            @value-changed="(value) => (signInLogin = value)"
           />
           <TheInput
-            class="col-span-1 w-[60%]"
+            class="col-start-3 col-span-4"
             :value="signInPassword"
             type="password"
             name="password"
             placeholder="Hasło"
             :required="true"
+            @value-changed="(value) => (signInPassword = value)"
+          />
+          <TheButton
+            class="col-start-3 col-span-4"
+            button-type="submit"
+            button-text="Zaloguj"
           />
         </div>
-        <button type="submit">Zaloguj</button>
       </form>
     </div>
   </div>
@@ -80,13 +90,21 @@ import { POSITION, useToast } from "vue-toastification";
 import router from "@/router";
 import TheInput from "./TheInput.vue";
 import TheButton from "./TheButton.vue";
+import axios from "axios";
+import { useUserStore } from "@/stores/userStore";
+
+type GetUserResponse = {
+  IsAdmin: boolean;
+  Token: string;
+};
 
 const toast = useToast();
 const signUpUsername = ref("");
 const signUpEmail = ref("");
 const signUpPassword = ref("");
-const signInEmail = ref("");
+const signInLogin = ref("");
 const signInPassword = ref("");
+const userStore = useUserStore();
 
 const createAccount = () => {
   if (
@@ -101,11 +119,21 @@ const createAccount = () => {
   }
 };
 
-const login = () => {
-  if (signInEmail.value.length > 0 && signInPassword.value.length > 0) {
-    signInEmail.value = "";
-    signInPassword.value = "";
-    router.push({ path: "/home" });
+const login = async () => {
+  if (signInLogin.value.length > 0 && signInPassword.value.length > 0) {
+    userStore
+      .login(signInLogin.value, signInPassword.value)
+      .then((response) => {
+        signInLogin.value = "";
+        signInPassword.value = "";
+        if (response) {
+          router.push("/home");
+        } else {
+          toast.error("Podano nieprawidłowy login lub hasło", {
+            position: POSITION.BOTTOM_CENTER,
+          });
+        }
+      });
   }
 };
 </script>
@@ -118,6 +146,7 @@ const login = () => {
 #chk {
   display: none;
 }
+
 .login {
   height: 460px;
   background: #eee;
