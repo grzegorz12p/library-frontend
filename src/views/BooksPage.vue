@@ -1,12 +1,10 @@
 <template>
-  <HeaderButtons>
-    <CreateForm />
-  </HeaderButtons>
+  <HeaderButtons> <TheList :isBookPage="true" /> </HeaderButtons>
 </template>
 
 <script setup lang="ts">
-import CreateForm from "@/components/Form.vue";
 import HeaderButtons from "@/components/HeaderButtons.vue";
+import TheList from "@/components/TheList.vue";
 </script>
 
 <style scoped></style>

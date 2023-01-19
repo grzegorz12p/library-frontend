@@ -4,6 +4,7 @@ import axios from "axios";
 interface UserLoginResponse {
   isAdmin: boolean;
   token: string;
+  userId: number;
 }
 export const useUserStore = defineStore("useUserStore", {
   state: () => {
@@ -12,12 +13,15 @@ export const useUserStore = defineStore("useUserStore", {
       isAdmin:
         localStorage.getItem("isAdmin") === "true" ? true : false || false,
       token: localStorage.getItem("token") ?? (undefined as unknown as string),
+      userId:
+        localStorage.getItem("userId") ?? (undefined as unknown as string),
     };
   },
   actions: {
     async logout() {
       this.isAdmin = false;
       this.token = undefined as unknown as string;
+      this.userId = undefined as unknown as string;
       localStorage.clear();
     },
     async login(login: string, password: string) {
@@ -36,8 +40,10 @@ export const useUserStore = defineStore("useUserStore", {
       if (response) {
         this.isAdmin = response.isAdmin;
         this.token = "Bearer " + response.token;
+        this.userId = String(response.userId);
         localStorage.setItem("token", this.token);
         localStorage.setItem("isAdmin", String(this.isAdmin));
+        localStorage.setItem("userId", this.userId);
         return true;
       }
       return false;
@@ -61,6 +67,9 @@ export const useUserStore = defineStore("useUserStore", {
     },
     getIsAdmin() {
       return this.isAdmin;
+    },
+    getUserId() {
+      return this.userId;
     },
   },
 });

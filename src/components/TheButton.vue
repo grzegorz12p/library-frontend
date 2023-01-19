@@ -22,6 +22,7 @@ button {
   font-size: 1em;
   font-weight: bold;
   margin-top: 20px;
+  padding: 10px;
   outline: none;
   border: none;
   border-radius: 5px;

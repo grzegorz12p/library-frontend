@@ -16,7 +16,7 @@ import { ref, watch } from "vue";
 
 interface Option {
   key: string;
-  value: string;
+  value: string | number;
 }
 
 const props = defineProps<{ items: Array<Option> }>();
@@ -31,6 +31,16 @@ watch(
       return;
     }
     emit("selectOption", newValue);
+  }
+);
+
+watch(
+  () => props.items,
+  (newValue, oldValue) => {
+    if (newValue === oldValue) {
+      return;
+    }
+    selectedValue.value = props.items[0].value;
   }
 );
 </script>

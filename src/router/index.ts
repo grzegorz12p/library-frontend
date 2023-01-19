@@ -1,6 +1,8 @@
 import { useUserStore } from "@/stores/userStore";
+import BooksPage from "@/views/BooksPage.vue";
 import CreateBookPage from "@/views/CreateBookPage.vue";
 import HomePage from "@/views/HomePage.vue";
+import UpdateBookPage from "@/views/UpdateBookPage.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import LoginPage from "../views/LoginPage.vue";
 
@@ -38,6 +40,30 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         const isLoggedIn = useUserStore().getToken();
         if (isLoggedIn && useUserStore().getIsAdmin()) {
+          return next();
+        }
+        next("/login");
+      },
+    },
+    {
+      path: "/books",
+      name: "books",
+      component: BooksPage,
+      beforeEnter: (to, from, next) => {
+        const isLoggedIn = useUserStore().getToken();
+        if (isLoggedIn) {
+          return next();
+        }
+        next("/login");
+      },
+    },
+    {
+      path: "/updateBook/:id",
+      name: "updateBook",
+      component: UpdateBookPage,
+      beforeEnter: (to, from, next) => {
+        const isLoggedIn = useUserStore().getToken();
+        if (isLoggedIn) {
           return next();
         }
         next("/login");
