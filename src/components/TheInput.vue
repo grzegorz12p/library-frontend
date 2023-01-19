@@ -13,7 +13,7 @@
 import { ref, watch } from "vue";
 
 const props = defineProps<{
-  value: string;
+  value: string | number;
   type: string;
   name: string;
   placeholder: string;

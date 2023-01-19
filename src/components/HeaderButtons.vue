@@ -10,13 +10,14 @@
         :on-handle-click="logout"
       />
       <TheButton
+        v-if="store.getIsAdmin()"
         class="col-span-4 md:col-span-2"
         button-text="Utwórz Książkę"
         button-type="button"
         :on-handle-click="moveToCreatePage"
       />
       <TheButton
-        class="col-span-4 md:col-span-2"
+        :class="store.getIsAdmin() ? 'col-span-4 md:col-span-2' : 'col-span-4'"
         button-text="Wyświetl ksiązki"
         button-type="button"
         :on-handle-click="moveToHomePage"

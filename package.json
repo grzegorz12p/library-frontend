@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@vee-validate/rules": "^4.7.3",
+    "@vueform/multiselect": "^2.5.8",
     "axios": "^1.2.2",
     "dayjs": "^1.11.7",
     "pinia": "^2.0.28",

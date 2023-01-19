@@ -37,7 +37,7 @@ const router = createRouter({
       component: CreateBookPage,
       beforeEnter: (to, from, next) => {
         const isLoggedIn = useUserStore().getToken();
-        if (isLoggedIn) {
+        if (isLoggedIn && useUserStore().getIsAdmin()) {
           return next();
         }
         next("/login");

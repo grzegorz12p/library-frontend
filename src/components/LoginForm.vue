@@ -5,7 +5,7 @@
     <input type="checkbox" id="chk" aria-hidden="true" />
 
     <div class="relative h-full w-full">
-      <form @submit="createAccount">
+      <form @submit.prevent="createAccount">
         <label
           class="text-white text-[2.3em] m-[60px] justify-center flex font-bold cursor-pointer transition-[0.5s_easy-in-out]"
           for="chk"
@@ -16,31 +16,34 @@
           <TheInput
             class="col-start-3 col-span-4"
             type="text"
-            name="txt"
+            name="createUserLogin"
             placeholder="Login"
             :value="signUpUsername"
             :required="true"
+            @value-changed="(value) => (signUpUsername = value)"
           />
           <TheInput
             class="col-start-3 col-span-4"
             :value="signUpEmail"
             type="email"
-            name="email"
+            name="createUserEmail"
             placeholder="Email"
             :required="true"
+            @value-changed="(value) => (signUpEmail = value)"
           />
           <TheInput
             class="col-start-3 col-span-4"
             :value="signUpPassword"
             type="password"
-            name="password"
+            name="createUserPassword"
             placeholder="Hasło"
             :required="true"
+            @value-changed="(value) => (signUpPassword = value)"
           />
           <TheButton
             class="col-start-3 col-span-4"
             button-type="submit"
-            button-text="Zaloguj"
+            button-text="Zarejestruj"
           />
         </div>
       </form>
@@ -90,13 +93,7 @@ import { POSITION, useToast } from "vue-toastification";
 import router from "@/router";
 import TheInput from "./TheInput.vue";
 import TheButton from "./TheButton.vue";
-import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
-
-type GetUserResponse = {
-  IsAdmin: boolean;
-  Token: string;
-};
 
 const toast = useToast();
 const signUpUsername = ref("");
@@ -112,10 +109,25 @@ const createAccount = () => {
     signUpUsername.value.length > 0 &&
     signUpPassword.value.length > 0
   ) {
-    toast.success("Account created", { position: POSITION.TOP_CENTER });
-    signUpUsername.value = "";
-    signUpEmail.value = "";
-    signUpPassword.value = "";
+    userStore
+      .createUser(signUpUsername.value, signUpEmail.value, signUpPassword.value)
+      .then((response) => {
+        signUpUsername.value = "";
+        signUpEmail.value = "";
+        signUpPassword.value = "";
+        if (response) {
+          toast.success("Użytkownik został utworzony.", {
+            position: POSITION.BOTTOM_CENTER,
+          });
+        } else {
+          toast.error(
+            "Podano nieprawidłowe dane albo użytkownik już istnieje.",
+            {
+              position: POSITION.BOTTOM_CENTER,
+            }
+          );
+        }
+      });
   }
 };
 
