@@ -157,6 +157,28 @@ export const useBookStore = defineStore("useBookStore", {
           return false;
         });
     },
+    async spectateBook(id: number) {
+      return await axios
+        .put(
+          `${useUserStore().url}Book/spectate`,
+          {
+            bookId: id,
+            userId: Number(useUserStore().getUserId()),
+          },
+          {
+            headers: {
+              Authorization: `${useUserStore().getToken()}`,
+            },
+          }
+        )
+        .then(async () => {
+          await this.getBooks();
+          return true;
+        })
+        .catch(() => {
+          return false;
+        });
+    },
     async updateBook(id: number, book: Book) {
       return await axios
         .put(

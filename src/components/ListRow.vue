@@ -86,7 +86,7 @@ import { useUserStore } from "@/stores/userStore";
 import dayjs from "dayjs";
 import BookDescriptionSpan from "./BookDescriptionSpan.vue";
 import TheButton from "./TheButton.vue";
-import { POSITION, useToast } from "vue-toastification";
+import {  useToast } from "vue-toastification";
 import router from "@/router";
 
 const props = defineProps<{ book: Book; isBookPage?: boolean }>();
@@ -98,13 +98,9 @@ const toast = useToast();
 const deleteBook = () => {
   bookStore.deleteBook(props.book.bookId!).then((response) => {
     if (response) {
-      toast.success("Usunięto książkę.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.success("Usunięto książkę.");
     } else {
-      toast.error("Nie udało się usunąć książki.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.error("Nie udało się usunąć książki.");
     }
   });
 };
@@ -113,18 +109,22 @@ const updateBook = () => {
   router.push(`/updateBook/${props.book.bookId!}`);
 };
 
-const spectateBook = () => {};
+const spectateBook = () => {
+  bookStore.spectateBook(props.book.bookId!).then((response) => {
+    if (response) {
+      toast.success("Zaczęto śledzenie strony.");
+    } else {
+      toast.error("Nie udało się rozpocząć śledzenia.");
+    }
+  });
+};
 
 const borrowBook = () => {
   bookStore.borrowBook(props.book.bookId!).then((response) => {
     if (response) {
-      toast.success("Wypożyczono książkę.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.success("Wypożyczono książkę.");
     } else {
-      toast.error("Nie udało się wypożyczyć książki.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.error("Nie udało się wypożyczyć książki.");
     }
   });
 };
@@ -132,13 +132,9 @@ const borrowBook = () => {
 const returnBook = () => {
   bookStore.returnBook(props.book.bookId!).then((response) => {
     if (response) {
-      toast.success("Zwrócono książkę.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.success("Zwrócono książkę.");
     } else {
-      toast.error("Nie udało się zwrócić książki.", {
-        position: POSITION.BOTTOM_CENTER,
-      });
+      toast.error("Nie udało się zwrócić książki.");
     }
   });
 };

@@ -93,17 +93,13 @@ import { ref, watch, onBeforeMount } from "vue";
 import TheButton from "./TheButton.vue";
 import Multiselect from "@vueform/multiselect";
 import { BookGenre, getSelectedGenresList } from "@/assets/api/types";
+import { multiSelectOptions } from "@/assets/api/constants";
 import { useBookStore } from "@/stores/bookStore";
 import { useUserStore } from "@/stores/userStore";
-import { POSITION, useToast } from "vue-toastification";
+import { useToast } from "vue-toastification";
 import router from "@/router";
 import { useRoute } from "vue-router";
 import dayjs from "dayjs";
-
-interface Genre {
-  value: number;
-  label: string;
-}
 
 const toast = useToast();
 const title = ref("");
@@ -118,50 +114,9 @@ const store = useBookStore();
 const isUpdatePage = router.currentRoute.value.fullPath.includes("updateBook");
 const id = ref(0);
 
-const multiSelectOptions: Array<Genre> = [
-  {
-    value: BookGenre.Action,
-    label: "Akcja",
-  },
-  {
-    value: BookGenre.Comedy,
-    label: "Komedia",
-  },
-  {
-    value: BookGenre.Drama,
-    label: "Dramat",
-  },
-  {
-    value: BookGenre.Musical,
-    label: "Musical",
-  },
-  {
-    value: BookGenre.Thriller,
-    label: "Thriller",
-  },
-  {
-    value: BookGenre.Horror,
-    label: "Horror",
-  },
-  {
-    value: BookGenre.Romance,
-    label: "Romance",
-  },
-  {
-    value: BookGenre.Fantasy,
-    label: "Fantasy",
-  },
-  {
-    value: BookGenre.TravelLiterature,
-    label: "Podróżnicza",
-  },
-];
-
 const createBook = () => {
   if (selectedGenres.value === 0) {
-    toast.error("Niepoprawny gatunek", {
-      position: POSITION.BOTTOM_CENTER,
-    });
+    toast.error("Niepoprawny gatunek");
     return;
   }
   store
@@ -175,17 +130,13 @@ const createBook = () => {
     })
     .then((response) => {
       if (response) {
-        toast.success("Ksiązka została utworzona.", {
-          position: POSITION.BOTTOM_CENTER,
-        });
+        toast.success("Ksiązka została utworzona.");
         clearFields();
         setTimeout(() => {
           router.push("/home");
         }, 3000);
       } else {
-        toast.error("Nie można utworzyć książki.", {
-          position: POSITION.BOTTOM_CENTER,
-        });
+        toast.error("Nie można utworzyć książki.");
         clearFields();
       }
     });
@@ -193,9 +144,7 @@ const createBook = () => {
 
 const updateBook = () => {
   if (selectedGenres.value === 0) {
-    toast.error("Niepoprawny gatunek", {
-      position: POSITION.BOTTOM_CENTER,
-    });
+    toast.error("Niepoprawny gatunek");
     return;
   }
   store
@@ -209,17 +158,13 @@ const updateBook = () => {
     })
     .then((response) => {
       if (response) {
-        toast.success("Ksiązka została zaaktualizowana.", {
-          position: POSITION.BOTTOM_CENTER,
-        });
+        toast.success("Ksiązka została zaaktualizowana.");
         clearFields();
         setTimeout(() => {
           router.push("/home");
         }, 3000);
       } else {
-        toast.error("Nie można zaaktualizować książki.", {
-          position: POSITION.BOTTOM_CENTER,
-        });
+        toast.error("Nie można zaaktualizować książki.");
         clearFields();
       }
     });

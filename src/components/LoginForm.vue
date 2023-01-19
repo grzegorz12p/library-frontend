@@ -89,7 +89,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { POSITION, useToast } from "vue-toastification";
+import { useToast } from "vue-toastification";
 import router from "@/router";
 import TheInput from "./TheInput.vue";
 import TheButton from "./TheButton.vue";
@@ -116,15 +116,10 @@ const createAccount = () => {
         signUpEmail.value = "";
         signUpPassword.value = "";
         if (response) {
-          toast.success("Użytkownik został utworzony.", {
-            position: POSITION.BOTTOM_CENTER,
-          });
+          toast.success("Użytkownik został utworzony.");
         } else {
           toast.error(
-            "Podano nieprawidłowe dane albo użytkownik już istnieje.",
-            {
-              position: POSITION.BOTTOM_CENTER,
-            }
+            "Podano nieprawidłowe dane albo użytkownik już istnieje."
           );
         }
       });
@@ -141,9 +136,7 @@ const login = async () => {
         if (response) {
           router.push("/home");
         } else {
-          toast.error("Podano nieprawidłowy login lub hasło", {
-            position: POSITION.BOTTOM_CENTER,
-          });
+          toast.error("Podano nieprawidłowy login lub hasło");
         }
       });
   }
