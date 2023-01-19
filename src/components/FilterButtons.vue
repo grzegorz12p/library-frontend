@@ -4,7 +4,7 @@
   >
     <TheSelect
       class="col-span-2 md:col-span-1"
-      :items="properties"
+      :items="filterProperties"
       @select-option="
         (value) => {
           selectedProperty = value;
@@ -47,6 +47,7 @@
 </template>
 
 <script setup lang="ts">
+import { filterProperties, sortingProperties } from "@/assets/api/constants";
 import { BookSorting, Condition, Property } from "@/assets/api/types";
 import SwitchButton from "@/components/SwitchButton.vue";
 import TheButton from "@/components/TheButton.vue";
@@ -147,47 +148,6 @@ const conditions = computed(() => {
   }
 });
 
-const properties = [
-  {
-    key: "Tytuł",
-    value: Property.Title.toString(),
-  },
-  {
-    key: "Wersja",
-    value: Property.Version.toString(),
-  },
-  {
-    key: "Data",
-    value: Property.Date.toString(),
-  },
-];
-
-const sortingProperties: { key: string; value: number }[] = [
-  {
-    key: "Tytuł",
-    value: BookSorting.Title,
-  },
-  {
-    key: "Wersja",
-    value: BookSorting.Version,
-  },
-  {
-    key: "Data",
-    value: BookSorting.PublicationDate,
-  },
-  {
-    key: "Gatunki",
-    value: BookSorting.Genres,
-  },
-  {
-    key: "Status",
-    value: BookSorting.Status,
-  },
-  {
-    key: "Autor",
-    value: BookSorting.Author,
-  },
-];
 </script>
 
 <style scoped></style>
