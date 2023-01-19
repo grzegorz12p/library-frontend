@@ -15,11 +15,16 @@
       <BookDescriptionSpan>
         Gatunki: {{ getSelectedBookGenre(book.genres) }}
       </BookDescriptionSpan>
-      <BookDescriptionSpan>
+      <BookDescriptionSpan v-if="!isBookPage">
         <span class="flex flex-row">
           Dostępność:
           <div
-            class="mx-[10px] my-auto w-[10px] h-[10px] rounded-lg bg-green-600"
+            class="mx-[10px] my-auto w-[10px] h-[10px] rounded-lg"
+            :class="
+              book.status === BookStatus.Dostępna
+                ? 'bg-[#00FF00]'
+                : 'bg-[#ff0000]'
+            "
           ></div>
           {{ BookStatus[book.status!] }}</span
         ></BookDescriptionSpan
@@ -32,13 +37,39 @@
         Data wydania: {{ dayjs(book.publicationDate).format("DD/MM/YYYY") }}
       </BookDescriptionSpan>
     </div>
-    <div class="md:col-span-1 my-auto mx-auto">
-      <TheButton button-text="Śledź status" button-type="button" />
-      <TheButton button-text="Wypożycz" button-type="button" />
+    <div v-if="!isBookPage" class="md:col-span-1 my-auto mx-auto">
+      <TheButton
+        v-if="book.status === BookStatus.Wypożyczona"
+        button-text="Śledź status"
+        button-type="button"
+        @handle-click="spectateBook"
+      />
+      <TheButton
+        v-if="book.status === BookStatus.Dostępna"
+        button-text="Wypożycz"
+        button-type="button"
+        @handle-click="borrowBook"
+      />
+      <TheButton
+        v-if="
+          book.status === BookStatus.Wypożyczona &&
+          String(book.userId) === userStore.getUserId()
+        "
+        button-text="Zwróć"
+        button-type="button"
+        @handle-click="returnBook"
+      />
+      <TheButton
+        v-if="userStore.isAdmin"
+        button-text="Zaktualizuj"
+        button-type="button"
+        @handle-click="updateBook"
+      />
       <TheButton
         v-if="userStore.isAdmin"
         button-text="Usuń"
         button-type="button"
+        @handle-click="deleteBook"
       />
     </div>
   </div>
@@ -48,20 +79,69 @@
 import {
   BookStatus,
   type Book,
-  BookGenre,
   getSelectedBookGenre,
 } from "@/assets/api/types";
+import { useBookStore } from "@/stores/bookStore";
 import { useUserStore } from "@/stores/userStore";
 import dayjs from "dayjs";
-import { ref } from "vue";
 import BookDescriptionSpan from "./BookDescriptionSpan.vue";
 import TheButton from "./TheButton.vue";
+import { POSITION, useToast } from "vue-toastification";
+import router from "@/router";
 
-defineProps<{ book: Book }>();
+const props = defineProps<{ book: Book; isBookPage?: boolean }>();
 
 const userStore = useUserStore();
+const bookStore = useBookStore();
+const toast = useToast();
 
-const deleteBook = () => {};
+const deleteBook = () => {
+  bookStore.deleteBook(props.book.bookId!).then((response) => {
+    if (response) {
+      toast.success("Usunięto książkę.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    } else {
+      toast.error("Nie udało się usunąć książki.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    }
+  });
+};
+
+const updateBook = () => {
+  router.push(`/updateBook/${props.book.bookId!}`);
+};
+
+const spectateBook = () => {};
+
+const borrowBook = () => {
+  bookStore.borrowBook(props.book.bookId!).then((response) => {
+    if (response) {
+      toast.success("Wypożyczono książkę.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    } else {
+      toast.error("Nie udało się wypożyczyć książki.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    }
+  });
+};
+
+const returnBook = () => {
+  bookStore.returnBook(props.book.bookId!).then((response) => {
+    if (response) {
+      toast.success("Zwrócono książkę.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    } else {
+      toast.error("Nie udało się zwrócić książki.", {
+        position: POSITION.BOTTOM_CENTER,
+      });
+    }
+  });
+};
 </script>
 
 <style scoped></style>

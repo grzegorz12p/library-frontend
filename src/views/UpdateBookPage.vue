@@ -1,11 +1,11 @@
 <template>
   <HeaderButtons>
-    <CreateForm />
+    <UpdateForm />
   </HeaderButtons>
 </template>
 
 <script setup lang="ts">
-import CreateForm from "@/components/Form.vue";
+import UpdateForm from "@/components/Form.vue";
 import HeaderButtons from "@/components/HeaderButtons.vue";
 </script>
 

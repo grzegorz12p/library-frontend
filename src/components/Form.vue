@@ -5,9 +5,16 @@
   >
     <label
       class="text-black text-[2.3em] justify-center flex p-10 font-bold cursor-pointer transition-[0.5s_easy-in-out]"
-      >Dodaj książkę</label
+      >{{
+        router.currentRoute.value.fullPath.includes("updateBook")
+          ? "Zaktualizuj książkę"
+          : "Dodaj książkę"
+      }}</label
     >
-    <form @submit.prevent="createBook" class="grid grid-cols-12 gap-3 p-5">
+    <form
+      @submit.prevent="isUpdatePage ? updateBook() : createBook()"
+      class="grid grid-cols-12 gap-3 p-5"
+    >
       <TheInput
         class="col-span-12"
         :value="title"
@@ -37,12 +44,12 @@
       />
       <TheInput
         class="col-span-6"
-        :value="authorSecondName"
+        :value="authorLastName"
         type="text"
-        name="authorSecondName"
+        name="authorLastName"
         placeholder="Nazwisko autora"
         :required="true"
-        @value-changed="(value) => (authorSecondName = value)"
+        @value-changed="(value) => (authorLastName = value)"
       />
       <Multiselect
         class="col-span-12"
@@ -73,7 +80,7 @@
       />
       <TheButton
         class="col-span-12"
-        button-text="Utwórz"
+        :button-text="isUpdatePage ? 'Zaaktualizuj' : 'Utwórz'"
         button-type="submit"
       />
     </form>
@@ -82,14 +89,16 @@
 
 <script setup lang="ts">
 import TheInput from "./TheInput.vue";
-import { ref, watch } from "vue";
+import { ref, watch, onBeforeMount } from "vue";
 import TheButton from "./TheButton.vue";
 import Multiselect from "@vueform/multiselect";
-import { BookGenre } from "@/assets/api/types";
+import { BookGenre, getSelectedGenresList } from "@/assets/api/types";
 import { useBookStore } from "@/stores/bookStore";
 import { useUserStore } from "@/stores/userStore";
 import { POSITION, useToast } from "vue-toastification";
 import router from "@/router";
+import { useRoute } from "vue-router";
+import dayjs from "dayjs";
 
 interface Genre {
   value: number;
@@ -100,12 +109,14 @@ const toast = useToast();
 const title = ref("");
 const year = ref<string>("");
 const authorName = ref("");
-const authorSecondName = ref("");
+const authorLastName = ref("");
 const genres = ref<number[]>([]);
 const version = ref(1);
 const imageUrl = ref("");
 const selectedGenres = ref<number>(0);
 const store = useBookStore();
+const isUpdatePage = router.currentRoute.value.fullPath.includes("updateBook");
+const id = ref(0);
 
 const multiSelectOptions: Array<Genre> = [
   {
@@ -155,7 +166,7 @@ const createBook = () => {
   }
   store
     .addBook({
-      author: { firstName: authorName.value, lastName: authorSecondName.value },
+      author: { firstName: authorName.value, lastName: authorLastName.value },
       genres: selectedGenres.value,
       imageUrl: imageUrl.value,
       publicationDate: year.value,
@@ -180,6 +191,40 @@ const createBook = () => {
     });
 };
 
+const updateBook = () => {
+  if (selectedGenres.value === 0) {
+    toast.error("Niepoprawny gatunek", {
+      position: POSITION.BOTTOM_CENTER,
+    });
+    return;
+  }
+  store
+    .updateBook(id.value, {
+      author: { firstName: authorName.value, lastName: authorLastName.value },
+      genres: selectedGenres.value,
+      imageUrl: imageUrl.value,
+      publicationDate: year.value,
+      title: title.value,
+      version: version.value,
+    })
+    .then((response) => {
+      if (response) {
+        toast.success("Ksiązka została zaaktualizowana.", {
+          position: POSITION.BOTTOM_CENTER,
+        });
+        clearFields();
+        setTimeout(() => {
+          router.push("/home");
+        }, 3000);
+      } else {
+        toast.error("Nie można zaaktualizować książki.", {
+          position: POSITION.BOTTOM_CENTER,
+        });
+        clearFields();
+      }
+    });
+};
+
 watch(
   () => genres.value,
   (newValue, oldValue) => {
@@ -197,12 +242,30 @@ const clearFields = () => {
   title.value = "";
   year.value = "";
   authorName.value = "";
-  authorSecondName.value = "";
+  authorLastName.value = "";
   genres.value = [];
   version.value = 1;
   imageUrl.value = "";
   selectedGenres.value = 0;
 };
+
+onBeforeMount(async () => {
+  if (isUpdatePage) {
+    const route = useRoute();
+    id.value = Number(route.params.id);
+    const response = await store.getBook(id.value);
+    const book = response?.book;
+    if (book) {
+      title.value = book.title;
+      year.value = dayjs(book.publicationDate).format("YYYY-MM-DD");
+      imageUrl.value = book.imageUrl;
+      genres.value = getSelectedGenresList(book.genres);
+      version.value = book.version;
+      authorName.value = book.author.firstName;
+      authorLastName.value = book.author.lastName;
+    }
+  }
+});
 </script>
 
 <style src="@vueform/multiselect/themes/default.css"></style>
