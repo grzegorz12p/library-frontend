@@ -1,4 +1,3 @@
-import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
@@ -6,26 +5,25 @@ interface UserLoginResponse {
   isAdmin: boolean;
   token: string;
 }
-
-const url = "https://localhost:44311/api/";
-
 export const useUserStore = defineStore("useUserStore", {
   state: () => {
     return {
-      isAdmin: Boolean(localStorage.getItem("isAdmin")) ?? false,
-      token: localStorage.getItem("token") ?? undefined as unknown as string,
+      url: "https://localhost:44311/api/",
+      isAdmin:
+        localStorage.getItem("isAdmin") === "true" ? true : false || false,
+      token: localStorage.getItem("token") ?? (undefined as unknown as string),
     };
   },
   actions: {
     async logout() {
-        this.isAdmin = false;
-        this.token = undefined as unknown as string;
-        localStorage.clear();
+      this.isAdmin = false;
+      this.token = undefined as unknown as string;
+      localStorage.clear();
     },
     async login(login: string, password: string) {
       const response = await axios
-        .post(url + "User", {
-          username: login,
+        .post(this.url + "User", {
+          login: login,
           password: password,
         })
         .then(function (response) {
@@ -44,8 +42,19 @@ export const useUserStore = defineStore("useUserStore", {
       }
       return false;
     },
-    createUser(login: string, email: string, password: string) {
-        
+    async createUser(login: string, email: string, password: string) {
+      return await axios
+        .post(this.url + "User/createUser", {
+          login: login,
+          password: password,
+          emailAddress: email,
+        })
+        .then(function () {
+          return true;
+        })
+        .catch(function () {
+          return false;
+        });
     },
     getToken() {
       return this.token;
